@@ -11,13 +11,32 @@
   font-weight: 600;
 }
 
+.status {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
 .game-info {
   margin-top: 16px;
+  height: 500px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+}
+
+.game-info .btn {
+  width: 200px;
+  background-color: #f90404;
+  color: #fff;
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 200;
+  border-radius: 5px;
+  border-width: 0px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .move-button {
@@ -30,10 +49,5 @@
   margin-bottom: 10px;
   padding: 10px 20px;
   text-decoration: none;
-}
-
-.status {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 10px;
+  cursor: pointer;
 }

@@ -31,6 +31,8 @@ function App() {
   let status;
   if (winner) {
     status = "Winner: " + winner;
+  } else if (stepNumber > 8) {
+    status = "Draw!";
   } else {
     status = `Next player: ${xIsNext ? "X" : "O"}`;
   }
@@ -71,20 +73,33 @@ function App() {
     setXIsNext(step % 2 === 0);
   };
 
+  const reset = () => {
+    setHistory([{ squares: Array(9).fill(null) }]);
+    setStepNumber(0);
+    setXIsNext(true);
+  };
+
   return (
-    <div className="game">
-      <p className="title">Tic Tac Toe</p>
-      <div className="game-board">
-        <Board
-          squares={current.squares}
-          onClick={(i) => {
-            handelClick(i);
-          }}
-        />
-      </div>
-      <div className="game-info">
-        <div className="status">{status}</div>
-        <ol>{moves}</ol>
+    <div>
+      <div className="game">
+        <p className="title">Tic Tac Toe</p>
+        <div className="game-board">
+          <Board
+            squares={current.squares}
+            onClick={(i) => {
+              handelClick(i);
+            }}
+          />
+        </div>
+        <div className="game-info">
+          <div className="status">{status}</div>
+          {(winner || stepNumber > 8) && (
+            <button className="btn" onClick={reset}>
+              retry?
+            </button>
+          )}
+          <ol>{moves}</ol>
+        </div>
       </div>
     </div>
   );
