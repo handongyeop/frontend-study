@@ -79,10 +79,29 @@ function App() {
     setXIsNext(true);
   };
 
+  const [theme, setTheme] = useState(
+    localStorage.getItem("dark-mode") !== null
+      ? localStorage.getItem("dark-mode")
+      : "N"
+  );
+
   return (
-    <div>
+    <div className={theme === "Y" ? "dark-mode" : ""}>
       <div className="game">
         <p className="title">Tic Tac Toe</p>
+        <label className="dark-mode-button">
+          <input
+            checked={theme === "Y" ? true : false}
+            type="checkbox"
+            onChange={() => {
+              theme === "Y"
+                ? localStorage.setItem("dark-mode", "N")
+                : localStorage.setItem("dark-mode", "Y");
+              setTheme(theme === "Y" ? "N" : "Y");
+            }}
+          />
+          <span className="onoff-switch"></span>
+        </label>
         <div className="game-board">
           <Board
             squares={current.squares}
