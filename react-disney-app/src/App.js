@@ -1,35 +1,33 @@
-import styled from "styled-components";
+import { Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Banner from "./components/Banner";
-import Category from "./components/Category";
 import Nav from "./components/Nav";
+import DetailPage from "./pages/DetailPage";
+import LoginPage from "./pages/LoginPage";
+import MainPage from "./pages/MainPage";
+import SearchPage from "./pages/SearchPage";
 
-const Container = styled.div`
-  position: relative;
-  min-height: calc(100vh - 250px);
-  overflow-x: hidden;
-  display: block;
-  top: 72px;
-  padding: 0 calc(3.5vw + 5px);
+const Layout = () => {
+  return (
+    <div>
+      <Nav />
 
-  &:after {
-    background: url("/images/home-background.png") center center / cover
-      no-repeat fixed;
-    content: "";
-    position: absolute;
-    inset: 0px;
-    opacity: 1;
-    z-index: -1;
-  }
-`;
+      <Outlet />
+    </div>
+  );
+};
 
 function App() {
   return (
-    <Container>
-      <Nav />
-      <Banner />
-      <Category />
-    </Container>
+    <div className="app">
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<LoginPage />} />
+          <Route path="main" element={<MainPage />} />
+          <Route path=":movieId" element={<DetailPage />} />
+          <Route path="search" element={<SearchPage />} />
+        </Route>
+      </Routes>
+    </div>
   );
 }
 
