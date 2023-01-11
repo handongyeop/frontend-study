@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
+import { useDebounce } from "../../hooks/useDebounce";
 import "./SearchPage.css";
 
 const SearchPage = () => {
@@ -14,6 +15,7 @@ const SearchPage = () => {
 
   let query = useQuery();
   const searchTerm = query.get("q");
+  const debounceSearchTerm = useDebounce(searchTerm, 300);
 
   const fetchSearchMovie = async () => {
     try {
@@ -27,8 +29,8 @@ const SearchPage = () => {
   };
 
   useEffect(() => {
-    searchTerm && fetchSearchMovie(searchTerm);
-  }, [searchTerm]);
+    debounceSearchTerm && fetchSearchMovie(debounceSearchTerm);
+  }, [debounceSearchTerm]);
 
   if (searchResults.length > 0) {
     return (

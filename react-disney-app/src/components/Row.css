@@ -90,6 +90,7 @@
 
 .row__poster:hover {
   transform: scale(1.08);
+  cursor: pointer;
 }
 
 @media screen and (min-width: 1200px) {
