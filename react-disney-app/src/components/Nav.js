@@ -1,12 +1,39 @@
+import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Nav = () => {
+  const initialUserData = localStorage.getItem("userData")
+    ? JSON.parse(localStorage.getItem("userData"))
+    : {};
+
   const [show, setShow] = useState(false);
-  const { pathname } = useLocation();
   const [searchValue, setSearchValue] = useState("");
+  const [userData, setUserData] = useState(initialUserData);
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+
+  useEffect(() => {
+    // 인증 상태 변화 확인
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        if (pathname === "/") {
+          navigate("/main");
+        }
+      } else {
+        navigate("/");
+      }
+    });
+  }, [auth, navigate, pathname]);
 
   const handleScroll = () => {
     if (window.scrollY > 50) {
@@ -32,6 +59,31 @@ const Nav = () => {
     navigate(`/search?q=${e.target.value}`);
   };
 
+  const handleAuth = () => {
+    // 팝업 형태로 구글 로그인창 보여주기
+    signInWithPopup(auth, provider)
+      // 구글 로그인 정보 가져오기
+      .then((result) => {
+        setUserData(result.user);
+        localStorage.setItem("userData", JSON.stringify(result.user));
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+
+  const handleLogOut = () => {
+    signOut(auth)
+      .then(() => {
+        setUserData({});
+        localStorage.removeItem("userData");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
   return (
     <NavWrapper show={show}>
       <Logo>
@@ -43,15 +95,23 @@ const Nav = () => {
       </Logo>
 
       {pathname === "/" ? (
-        <Login>Login</Login>
+        <Login onClick={handleAuth}>Login</Login>
       ) : (
-        <Input
-          value={searchValue}
-          onChange={handleChange}
-          className="nav__input"
-          type="text"
-          placeholder="검색해주세요."
-        />
+        <>
+          <Input
+            value={searchValue}
+            onChange={handleChange}
+            className="nav__input"
+            type="text"
+            placeholder="검색해주세요."
+          />
+          <SignOut>
+            <UserImg src={userData.photoURL} alt={userData.displayName} />
+            <DropDown>
+              <span onClick={handleLogOut}>Sign Out</span>
+            </DropDown>
+          </SignOut>
+        </>
       )}
     </NavWrapper>
   );
@@ -59,9 +119,47 @@ const Nav = () => {
 
 export default Nav;
 
+const DropDown = styled.div`
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: rgb(19, 19, 19);
+  border: 1px solid rgba(151, 151, 151, 0.34);
+  border-radius: 4px;
+  box-shadow: rgb(0 0 0 / 50%) 0px 0px 18px 0px;
+  padding: 10px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  width: 100%;
+  opacity: 0;
+`;
+
+const SignOut = styled.div`
+  position: relative;
+  height: 48px;
+  width: 48px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    ${DropDown} {
+      opacity: 1;
+      transition-duration: 1s;
+    }
+  }
+`;
+
+const UserImg = styled.img`
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+`;
+
 const Login = styled.a`
   background-color: rgb(0, 0, 0, 0.6);
-  padding-top: 8px 16px;
+  padding: 8px 16px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   border: 1px solid #f9f9f9;
@@ -69,6 +167,7 @@ const Login = styled.a`
   transition: all 0.2s ease 0s;
 
   &:hover {
+    cursor: pointer;
     background-color: #f9f9f9;
     color: #000;
     border-color: transparent;
@@ -112,5 +211,9 @@ const Logo = styled.a`
   img {
     display: block;
     width: 100%;
+  }
+
+  &:hover {
+    cursor: pointer;
   }
 `;
